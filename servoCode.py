@@ -3,12 +3,12 @@ import time
 
 # Setup
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(11, GPIO.OUT)  # Horizontal servo
-GPIO.setup(13, GPIO.OUT)  # Vertical servo
+GPIO.setup(17, GPIO.OUT)  # Horizontal servo
+GPIO.setup(27, GPIO.OUT)  # Vertical servo
 
 # Create PWM objects
-pwm_horizontal = GPIO.PWM(11, 50)  # 50Hz frequency
-pwm_vertical = GPIO.PWM(13, 50)    # 50Hz frequency
+pwm_horizontal = GPIO.PWM(17, 50)  # 50Hz frequency
+pwm_vertical = GPIO.PWM(27, 50)    # 50Hz frequency
 
 # Start PWM with 0 duty cycle (safe position)
 pwm_horizontal.start(0)
