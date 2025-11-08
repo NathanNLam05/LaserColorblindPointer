@@ -39,14 +39,26 @@ except KeyboardInterrupt:
     pass
 
 finally:
-    # *** Reset both servos to home position before exiting ***
-    set_angle(pwm_horizontal, HOME_HORIZONTAL)
-    set_angle(pwm_vertical, HOME_VERTICAL)
-    time.sleep(0.5)
+    try:
+        # Move servos to home safely
+        set_angle(pwm_horizontal, HOME_HORIZONTAL)
+        set_angle(pwm_vertical, HOME_VERTICAL)
+        time.sleep(0.5)
+    except Exception as e:
+        print("Error during final move:", e)
 
-    pwm_horizontal.stop()
-    pwm_vertical.stop()
+    # Safely stop PWM signals
+    for pwm in (pwm_horizontal, pwm_vertical):
+        try:
+            pwm.ChangeDutyCycle(0)
+            pwm.stop()
+        except Exception as e:
+            print("PWM stop error:", e)
+    del pwm_horizontal
+    del pwm_vertical
     GPIO.cleanup()
+    print("GPIO cleaned up successfully.")
+
 
 
 
