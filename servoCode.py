@@ -59,22 +59,23 @@ def lookatcoord(x, y, img_width=640, img_height=480):
 
 # Test the function
 try:
-    # Test positions (assuming 640x480 image)
-    print("Moving to center...")
-    lookatcoord(320, 240)  # Center
-    time.sleep(1)
-    
-    print("Moving to top-left...")
-    lookatcoord(0, 0)      # Top-left
-    time.sleep(1)
-    
-    print("Moving to bottom-right...")
-    lookatcoord(640, 480)  # Bottom-right
-    time.sleep(1)
-    
-    print("Moving to custom position...")
-    lookatcoord(100, 300)  # Custom position
-    time.sleep(1)
+    while True:
+        # Test positions (assuming 640x480 image)
+        print("Moving to center...")
+        lookatcoord(320, 240)  # Center
+        time.sleep(1)
+        
+        print("Moving to top-left...")
+        lookatcoord(0, 0)      # Top-left
+        time.sleep(1)
+        
+        print("Moving to bottom-right...")
+        lookatcoord(640, 480)  # Bottom-right
+        time.sleep(1)
+        
+        print("Moving to custom position...")
+        lookatcoord(100, 300)  # Custom position
+        time.sleep(1)
     
     # You can add more test positions here
     
