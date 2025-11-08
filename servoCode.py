@@ -26,6 +26,7 @@ HOME_HORIZONTAL = 90
 HOME_VERTICAL = 90
 
 try:
+#Replace this when we have the specific angle 
     horizontal_angles = [90, 45, 120, 0]
     vertical_angles   = [30, 60, 90, 45]
 
