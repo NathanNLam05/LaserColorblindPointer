@@ -26,14 +26,15 @@ HOME_HORIZONTAL = 90
 HOME_VERTICAL = 90
 
 try:
+    while True:
 #Replace this when we have the specific angle 
-    horizontal_angles = [90, 45, 120, 0]
-    vertical_angles   = [30, 60, 90, 45]
+        horizontal_angles = [90, 45, 120, 0]
+        vertical_angles   = [30, 60, 90, 45]
 
-    for h_angle, v_angle in zip(horizontal_angles, vertical_angles):
-        set_angle(pwm_horizontal, h_angle)
-        set_angle(pwm_vertical, v_angle)
-        time.sleep(1)
+        for h_angle, v_angle in zip(horizontal_angles, vertical_angles):
+            set_angle(pwm_horizontal, h_angle)
+            set_angle(pwm_vertical, v_angle)
+            time.sleep(1)
 
 except KeyboardInterrupt:
     pass
