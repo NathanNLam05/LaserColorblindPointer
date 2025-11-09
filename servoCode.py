@@ -1,11 +1,14 @@
 import RPi.GPIO as GPIO
 import time
+import math
 
 GPIO.setmode(GPIO.BCM)
-
+# Variables
 HORIZONTAL_PIN = 17   # Servo 1
 VERTICAL_PIN = 27     # Servo 2
-
+MAX_IMAGE_H = 1000
+MAX_IMAGE_R = 1000
+#PIN SETUP
 GPIO.setup(HORIZONTAL_PIN, GPIO.OUT)
 GPIO.setup(VERTICAL_PIN, GPIO.OUT)
 
@@ -15,15 +18,10 @@ pwm_vertical = GPIO.PWM(VERTICAL_PIN, 50)
 pwm_horizontal.start(0)
 pwm_vertical.start(0)
 
-def set_angle(pwm, angle):
-    duty = 2 + (angle / 18)
-    pwm.ChangeDutyCycle(duty)
-    time.sleep(0.3)
-    pwm.ChangeDutyCycle(0)  # reduce buzzing
-
 # Define your home / reset angles here:
 HOME_HORIZONTAL = 90
 HOME_VERTICAL = 90
+
 
 try:
     while True:
@@ -60,6 +58,19 @@ finally:
     GPIO.cleanup()
     print("GPIO cleaned up successfully.")
 
+def coordToAngle(r, c, dist):
+    horizAng = math.atan((c-c(MAX_IMAGE_H/2))/dist)
+    verticAng = math.atan((r-r(MAX_IMAGE_R/2))/dist)
+    return None
+
+def cleanCoordQueue():
+    horizontal_angles = []
+    vertical_angles = []
+
+def set_angle(pwm, angle):
+    duty = 2 + (angle / 18)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.3)
 
 
 
