@@ -8,18 +8,22 @@ import webcolors
 from collections import deque
 
 class ImageAnalyzer:
-    def __init__(self, i_path:str, o_path:str='', n_colors:int=45, delta_e_threshold:int=15):
+    def __init__(self, i_path:str, o_path:str='', n_colors:int=45, delta_e_threshold:int=15, 
+                 max_color_count:int=80, min_cluster_size:int=7):
         self.input_path = i_path
         self.output_path = o_path if o_path != '' else "output-" + i_path
         # TODO validate paths
         self.N_COLORS = n_colors
         self.DELTA_E_THRESHOLD = delta_e_threshold
+        self.MAX_COLOR_COUNT = max_color_count
+        self.MIN_CLUSTER_SIZE = min_cluster_size
 
-        self.pixels_lab = None
+        self.pixels_lab = None #TODO these probably shouldnt default to None. doesn't matter two much
         self.kmeans = None
         self.palette_lab = None
         self.merged_palette_lab = None
         self.segmented_lab = None
+        self.coordinates = []
 
         # Extract colors, merge, and segment colors
         img_bgr = cv2.imread(self.input_path)
@@ -29,11 +33,17 @@ class ImageAnalyzer:
         self.segmentation()
 
         self.color_counts = dict()
-        midpoints = self.find_clusters_midpoints(self.segmented_rgb, min_cluster_size=7)
+        midpoints = self.find_clusters_midpoints(self.segmented_rgb)
         # for c in midpoints:
         #     print(c)
 
-        self.visualize_results(midpoints, max_color_count=80)    
+        self.visualize_results(midpoints)    
+
+    def get_coordinates(self):
+        """Returns a list of coordinates approximating hold location"""
+        print(self.coordinates)
+        return self.coordinates
+
     def extract_color(self):
         """Runs KMeans"""
         self.pixels_lab = rgb2lab(self.img_rgb.reshape(-1, 1, 3) / 255.0)[:, 0, :]
@@ -100,7 +110,7 @@ class ImageAnalyzer:
             closest_name = self.closest_colour(requested_colour)
         return closest_name
 
-    def find_clusters_midpoints(self, arr, connectivity=4, min_cluster_size=7):
+    def find_clusters_midpoints(self, arr, connectivity=4):
         n, m = arr.shape[:2]
         visited = np.zeros((n, m), dtype=bool)
         midpoints = []
@@ -132,7 +142,7 @@ class ImageAnalyzer:
                 # compute midpoint
                 xs, ys = zip(*cluster_pixels)
                 mid_r, mid_c = np.mean(xs), np.mean(ys)
-                if len(cluster_pixels) > min_cluster_size:
+                if len(cluster_pixels) > self.MIN_CLUSTER_SIZE:
                     color_name = self.get_colour_name(color)
                     midpoints.append({
                         "color": [int(c) for c in color],
@@ -144,6 +154,14 @@ class ImageAnalyzer:
                         self.color_counts[color_name] += 1
                     else:
                         self.color_counts[color_name] = 1
+
+        for mp in midpoints:
+            y, x = mp["midpoint"]
+            color_name = mp["color_name"]
+            if self.color_counts[color_name] < self.MAX_COLOR_COUNT:
+                self.coordinates.append((x,y))
+        print(self.coordinates)
+
         return midpoints
 
     def save_image(self, output_path):
@@ -166,7 +184,7 @@ class ImageAnalyzer:
         for mp in midpoints:
             y, x = mp["midpoint"]     # note: imshow swaps axes
             color_name = mp["color_name"]
-            if self.color_counts[color_name] < max_color_count:
+            if self.color_counts[color_name] < self.MAX_COLOR_COUNT:
                 ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6, markeredgecolor='black', markeredgewidth=1.5)
                 # ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6)
             # Optional: label with color or cluster id
@@ -175,7 +193,11 @@ class ImageAnalyzer:
         plt.show()
 
 if __name__ == "__main__":
-    file_name = "AV-ProwCave.jpg"
+    file_name = "holds-small.jpg"
     file_path = rf"./images/{file_name}"
-    image_analyzer = ImageAnalyzer(i_path=file_path)
+    image_analyzer = ImageAnalyzer(i_path=file_path, n_colors=45, delta_e_threshold=15, 
+                max_color_count=40, min_cluster_size=7)
+    #TODO changing this ^^^ and running is a lot better for making quick changes and seeing what happens.
+    #Don't forget to update Nathan's main file with the optimal values
     print(image_analyzer.color_counts)
+    print(image_analyzer.coordinates)
