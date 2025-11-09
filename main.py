@@ -10,7 +10,7 @@ takePicture(path)
 image_analyzer = ImageAnalyzer(i_path=path)
 
 coordinates = image_analyzer.get_coordinates()
-    
+
 for coord in coordinates:
     # Assuming coord is a tuple (x, y)
     queueCoordToAngle(coord[0], coord[1])

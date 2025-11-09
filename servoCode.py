@@ -5,8 +5,8 @@ import math
 # === Constants ===
 HORIZONTAL_PIN = 17
 VERTICAL_PIN = 27
-MAX_IMAGE_H = 3280
-MAX_IMAGE_R = 2464
+MAX_IMAGE_H = 160
+MAX_IMAGE_R = 120
 HOME_HORIZONTAL = 90
 HOME_VERTICAL = 90
 TIME_BETWEEN_QUEUE = 1.0  # seconds (use float, not 5000 ms)
@@ -41,15 +41,23 @@ def queueCoordToAngle(r, c):
     c = column (horizontal pixel position)
     """
 
-    # Compute offset from image center
-    x_offset = c - (MAX_IMAGE_H / 2)
-    y_offset = r - (MAX_IMAGE_R / 2)
+    # Precompute focal lengths (pixels)
+    focal_px_h = (MAX_IMAGE_H / 2.0) / math.tan(math.radians(CAMERA_FOV_H / 2.0))
+    focal_px_v = (MAX_IMAGE_R / 2.0) / math.tan(math.radians(CAMERA_FOV_V / 2.0))
 
-    # Convert pixel offsets to angular offsets
-    horizAng = HORIZONTAL_OFFSET + HOME_HORIZONTAL - (x_offset / MAX_IMAGE_H) * CAMERA_FOV_H
-    verticAng = VERTICAL_OFFSET + HOME_VERTICAL - (y_offset / MAX_IMAGE_R) * CAMERA_FOV_V  # subtract because y increases downward
+    # inside your queueCoordToAngle(r, c) function, after computing x_offset/y_offset:
 
-    # === Clamp to SAFE servo ranges ===
+    # horizontal angular offset via trig
+    ang_off_h = math.degrees(math.atan2(HORIZONTAL_OFFSET, focal_px_h))   # positive = right
+    # vertical angular offset via trig
+    ang_off_v = math.degrees(math.atan2(VERTICAL_OFFSET, focal_px_v))   # positive = down (image coord)
+
+    # Now build final servo angles.
+    # Decide sign: if increasing servo angle -> right/down, add offsets accordingly.
+    horizAng = HOME_HORIZONTAL + HORIZONTAL_OFFSET + ang_off_h
+    verticAng = HOME_VERTICAL + VERTICAL_OFFSET - ang_off_v  # minus because image y grows downward
+
+    # clamp to safe ranges
     horizAng = max(MIN_HORIZONTAL, min(MAX_HORIZONTAL, horizAng))
     verticAng = max(MIN_VERTICAL, min(MAX_VERTICAL, verticAng))
 
