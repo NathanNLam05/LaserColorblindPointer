@@ -42,8 +42,8 @@ def average_distance(duration=5):
     return None
 
 try:
-    print("Measuring distance for 5 seconds...")
-    avg_dist = average_distance(5)
+    print("Measuring distance for 2 seconds...")
+    avg_dist = average_distance(2)
     if avg_dist is not None:
         print(f"Average Distance: {avg_dist} m")
     else:
