@@ -41,7 +41,7 @@ class ImageAnalyzer:
 
     def get_coordinates(self):
         """Returns a list of coordinates approximating hold location"""
-        print(self.coordinates)
+        #print(self.coordinates)
         return self.coordinates
 
     def extract_color(self):

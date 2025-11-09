@@ -1,4 +1,4 @@
-from servoCode import appendForTest, runQueue,QueueCoordToAngle 
+from servoCode import appendForTest, runQueue,queueCoordToAngle 
 from ultra import get_distance, average_distance
 from Camera import takePicture
 from image_analyzer import ImageAnalyzer
@@ -7,9 +7,11 @@ from image_analyzer import ImageAnalyzer
 
 path="/home/pi/Pictures/test.jpg"
 takePicture(path)
-image_analyzer = ImageAnalyzer(i_file=path)
-dist = average_distance
+image_analyzer = ImageAnalyzer(i_path=path)
 
-appendForTest(45)
-
+coordinates = image_analyzer.get_coordinates()
+    
+for coord in coordinates:
+    # Assuming coord is a tuple (x, y)
+    queueCoordToAngle(coord[0], coord[1])
 runQueue()
