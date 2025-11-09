@@ -29,7 +29,7 @@ def get_distance():
     distance_m = (pulse_duration * 343) / 2
     return distance_m
 
-def average_distance(duration=5):
+def average_distance(duration):
     """Take readings for 'duration' seconds and return average distance"""
     readings = []
     start_time = time.time()
