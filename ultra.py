@@ -29,7 +29,7 @@ def get_distance():
     distance_m = (pulse_duration * 343) / 2
     return distance_m
 
-def average_distance(duration=3):
+def average_distance(duration=5):
     """Take readings for 'duration' seconds and return average distance"""
     readings = []
     start_time = time.time()
@@ -42,8 +42,8 @@ def average_distance(duration=3):
     return None
 
 try:
-    print("Measuring distance for 3 seconds...")
-    avg_dist = average_distance(3)
+    print("Measuring distance for 5 seconds...")
+    avg_dist = average_distance(5)
     if avg_dist is not None:
         print(f"Average Distance: {avg_dist} m")
     else:
