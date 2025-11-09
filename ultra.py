@@ -11,7 +11,7 @@ GPIO.setup(TRIG, GPIO.OUT)
 GPIO.setup(ECHO, GPIO.IN)
 
 def get_distance():
-    """Measure distance using HC-SR04"""
+    """Measure distance using HC-SR04 and return meters"""
     # Ensure trigger is low
     GPIO.output(TRIG, False)
     time.sleep(0.05)
@@ -21,24 +21,24 @@ def get_distance():
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    # Wait for echo to go high and then low
+    # Wait for echo to go high then low
     while GPIO.input(ECHO) == 0:
         pulse_start = time.time()
 
     while GPIO.input(ECHO) == 1:
         pulse_end = time.time()
 
-    # Calculate distance (speed of sound: 34300 cm/s)
+    # Calculate distance (speed of sound: 343 m/s)
     pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150
-    distance = round(distance, 2)
-    return distance
+    distance_m = (pulse_duration * 343) / 2  # divide by 2 for round trip
+    distance_m = round(distance_m, 3)        # 3 decimal places (e.g., 0.256 m)
+    return distance_m
 
 try:
-    print("Starting distance measurement. Press Ctrl+C to stop.")
+    print("Starting distance measurement (in meters). Press Ctrl+C to stop.")
     while True:
         dist = get_distance()
-        print(f"Distance: {dist} cm")
+        print(f"Distance: {dist} m")
         time.sleep(1)
 
 except KeyboardInterrupt:
