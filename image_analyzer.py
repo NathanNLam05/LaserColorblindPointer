@@ -8,7 +8,7 @@ import webcolors
 from collections import deque
 
 class ImageAnalyzer:
-    def __init__(self, i_path:str, o_path:str='', n_colors:int=36, delta_e_threshold:int=15):
+    def __init__(self, i_path:str, o_path:str='', n_colors:int=45, delta_e_threshold:int=15):
         self.input_path = i_path
         self.output_path = o_path if o_path != '' else "output-" + i_path
         # TODO validate paths
@@ -29,12 +29,11 @@ class ImageAnalyzer:
         self.segmentation()
 
         self.color_counts = dict()
-        midpoints = self.find_clusters_midpoints(self.segmented_rgb)
+        midpoints = self.find_clusters_midpoints(self.segmented_rgb, min_cluster_size=7)
         # for c in midpoints:
         #     print(c)
 
-        self.visualize_results(midpoints)
-        
+        self.visualize_results(midpoints, max_color_count=80)    
     def extract_color(self):
         """Runs KMeans"""
         self.pixels_lab = rgb2lab(self.img_rgb.reshape(-1, 1, 3) / 255.0)[:, 0, :]
@@ -101,7 +100,7 @@ class ImageAnalyzer:
             closest_name = self.closest_colour(requested_colour)
         return closest_name
 
-    def find_clusters_midpoints(self, arr, connectivity=4):
+    def find_clusters_midpoints(self, arr, connectivity=4, min_cluster_size=7):
         n, m = arr.shape[:2]
         visited = np.zeros((n, m), dtype=bool)
         midpoints = []
@@ -133,7 +132,7 @@ class ImageAnalyzer:
                 # compute midpoint
                 xs, ys = zip(*cluster_pixels)
                 mid_r, mid_c = np.mean(xs), np.mean(ys)
-                if len(cluster_pixels) > 7:
+                if len(cluster_pixels) > min_cluster_size:
                     color_name = self.get_colour_name(color)
                     midpoints.append({
                         "color": [int(c) for c in color],
@@ -152,7 +151,7 @@ class ImageAnalyzer:
         Image.fromarray(self.segmented_rgb).save(output_path)
         print(f"Saved segmented image to {output_path}")
 
-    def visualize_results(self, midpoints):
+    def visualize_results(self, midpoints, max_color_count=100):
         # === VISUALIZE RESULTS ===
         fig, ax = plt.subplots(1, 2, figsize=(18, 6))
 
@@ -167,15 +166,16 @@ class ImageAnalyzer:
         for mp in midpoints:
             y, x = mp["midpoint"]     # note: imshow swaps axes
             color_name = mp["color_name"]
-            if self.color_counts[color_name] < 100:
-                # ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6, markeredgecolor='red', markeredgewidth=1.5)
-                ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6)
+            if self.color_counts[color_name] < max_color_count:
+                ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6, markeredgecolor='black', markeredgewidth=1.5)
+                # ax[0].plot(x, y, 'wo', color=tuple([c/255.0 for c in mp["color"]]), markersize=6)
             # Optional: label with color or cluster id
 
         plt.tight_layout()
         plt.show()
 
 if __name__ == "__main__":
-    file_name = "IMG_2746.png"
+    file_name = "AV-ProwCave.jpg"
     file_path = rf"./images/{file_name}"
     image_analyzer = ImageAnalyzer(i_path=file_path)
+    print(image_analyzer.color_counts)
