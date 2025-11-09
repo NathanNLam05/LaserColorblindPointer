@@ -12,35 +12,41 @@ GPIO.setup(ECHO, GPIO.IN)
 
 def get_distance():
     """Measure distance using HC-SR04 and return meters"""
-    # Ensure trigger is low
     GPIO.output(TRIG, False)
     time.sleep(0.05)
 
-    # Send a 10 µs pulse to trigger
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    # Wait for echo to go high then low
     while GPIO.input(ECHO) == 0:
         pulse_start = time.time()
 
     while GPIO.input(ECHO) == 1:
         pulse_end = time.time()
 
-    # Calculate distance (speed of sound: 343 m/s)
     pulse_duration = pulse_end - pulse_start
-    distance_m = (pulse_duration * 343) / 2  # divide by 2 for round trip
-    distance_m = round(distance_m, 3)        # 3 decimal places (e.g., 0.256 m)
+    distance_m = (pulse_duration * 343) / 2
     return distance_m
 
-try:
-    print("Starting distance measurement (in meters). Press Ctrl+C to stop.")
-    while True:
+def average_distance(duration=3):
+    """Take readings for 'duration' seconds and return average distance"""
+    readings = []
+    start_time = time.time()
+    while time.time() - start_time < duration:
         dist = get_distance()
-        print(f"Distance: {dist} m")
-        time.sleep(1)
+        readings.append(dist)
+        time.sleep(0.1)  # sample about 10 times per second
+    if readings:
+        return round(sum(readings) / len(readings), 3)
+    return None
 
-except KeyboardInterrupt:
-    print("\nMeasurement stopped by user")
+try:
+    print("Measuring distance for 3 seconds...")
+    avg_dist = average_distance(3)
+    if avg_dist is not None:
+        print(f"Average Distance: {avg_dist} m")
+    else:
+        print("No valid readings.")
+finally:
     GPIO.cleanup()
