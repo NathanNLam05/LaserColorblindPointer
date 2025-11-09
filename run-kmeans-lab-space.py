@@ -6,11 +6,12 @@ from skimage.color import rgb2lab, lab2rgb, deltaE_ciede2000
 import matplotlib.pyplot as plt
 
 # === CONFIG ===
-IMG_NAME = "IMG_2746"
-N_COLORS = 60                # initial K-Means colors
-DELTA_E_THRESHOLD = 10       # merge threshold for perceptual similarity
-IMG_PATH = f"./images/{IMG_NAME}.png"
-OUTPUT_PATH = f"./images/{IMG_NAME}_holds_quantized_{N_COLORS}_LabSpace_del_e_{DELTA_E_THRESHOLD}.png"
+# IMG_NAME = "IMG_2748"
+IMG_NAME = "AV-ProwCave.jpg"
+N_COLORS = 36                # initial K-Means colors
+DELTA_E_THRESHOLD = 12       # merge threshold for perceptual similarity
+IMG_PATH = fr"./images/{IMG_NAME}"
+OUTPUT_PATH = f"./images2/{IMG_NAME}_{N_COLORS}-{DELTA_E_THRESHOLD}.png"
 
 
 # === 1️⃣ LIGHTING NORMALIZATION (optional) ===
@@ -108,10 +109,10 @@ plt.tight_layout()
 plt.show()
 
 # === SHOW FINAL COLOR PALETTE ===
-fig, ax = plt.subplots(figsize=(10, 2))
-ax.imshow([merged_palette_rgb])
-ax.set_title("Final Merged Color Palette (Lab-based K-Means)")
-ax.set_xticks(range(len(merged_palette_rgb)))
-ax.set_xticklabels([label_map[i] for i in range(len(merged_palette_rgb))], rotation=45)
-ax.set_yticks([])
-plt.show()
+# fig, ax = plt.subplots(figsize=(10, 2))
+# ax.imshow([merged_palette_rgb])
+# ax.set_title("Final Merged Color Palette (Lab-based K-Means)")
+# ax.set_xticks(range(len(merged_palette_rgb)))
+# ax.set_xticklabels([label_map[i] for i in range(len(merged_palette_rgb))], rotation=45)
+# ax.set_yticks([])
+# plt.show()
