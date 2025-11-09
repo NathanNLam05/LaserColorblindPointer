@@ -9,7 +9,7 @@ picam2 = Picamera2()
 picam2.start_preview() 
 time.sleep(5)
 
-camera.capture("campic.jpg")
+picam2.capture("test.jpg")
 
 
 
